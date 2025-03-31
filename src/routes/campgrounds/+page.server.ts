@@ -1,5 +1,5 @@
-import { Campground } from '$lib/server/campground';
 import type { PageServerLoad } from './$types';
+import { Campground } from '$features/campgrounds/document';
 
 export const load = (async () => {
 	const campgrounds: {

@@ -1,8 +1,8 @@
-import { error, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import { error, redirect } from '@sveltejs/kit';
 import mongoose from 'mongoose';
-import { Campground } from '$lib/server/campground';
-import { Review } from '$lib/server/review';
+import { Campground } from '$features/campgrounds/document';
+import { Review } from '$features/reviews/document';
 
 export const load = (async ({ params }) => {
 	const campgrounds = await Campground.aggregate([

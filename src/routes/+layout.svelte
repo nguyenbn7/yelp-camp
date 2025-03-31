@@ -1,11 +1,18 @@
 <script lang="ts">
-	import Logo from '$assets/logo.png';
+	import type { Snippet } from 'svelte';
+	import type { LayoutData } from './$types';
+
 	import '../app.css';
-	let { children } = $props();
+	import { Toaster } from '$lib/components/ui/sonner';
+
+	interface LayoutProps {
+		data: LayoutData;
+		children: Snippet;
+	}
+
+	let { data, children }: LayoutProps = $props();
 </script>
 
-<svelte:head>
-	<link rel="shortcut icon" href={Logo} type="image/png" />
-</svelte:head>
-
 {@render children()}
+
+<Toaster richColors closeButton />

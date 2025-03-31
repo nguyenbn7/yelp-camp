@@ -2,36 +2,20 @@
 	import type { Snippet } from 'svelte';
 	import type { LayoutData } from './$types';
 	import Logo from '$assets/logo.png';
-	import { AppName } from '$lib';
-	import { tweened } from 'svelte/motion';
-	import { expoInOut } from 'svelte/easing';
-	import { fade } from 'svelte/transition';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
+	import { PUBLIC_APP_NAME } from '$env/static/public';
+	import { BackToTop } from '$lib/components/button';
+	import { Button } from '$lib/components/ui/button';
 
-	let { data, children }: { data: LayoutData; children: Snippet } = $props();
-
-	let scrollY: number = $state(0);
-	const scrollYStore = tweened(0);
-
-	async function backToTop(
-		delay?: number,
-		duration?: number | ((from: number, to: number) => number),
-		easing?: (t: number) => number
-	) {
-		scrollYStore.set(scrollY, { duration: 0 });
-
-		const unsubscribe = scrollYStore.subscribe((value) => {
-			window.scrollTo(0, value);
-		});
-
-		await scrollYStore.set(0, { delay, duration, easing });
-
-		return unsubscribe();
+	interface LayoutProps {
+		data: LayoutData;
+		children: Snippet;
 	}
+
+	let { data, children }: LayoutProps = $props();
 </script>
 
-<svelte:window bind:scrollY />
-
+<!-- TODO: -->
 <nav class="bg-white antialiased dark:bg-gray-800">
 	<div class="mx-auto max-w-screen-xl px-4 py-4 2xl:px-0">
 		<div class="flex items-center justify-between">
@@ -56,10 +40,10 @@
 						<a
 							href="/campgrounds"
 							title="Campgrounds"
-							class="flex text-sm font-medium hover:text-primary-700 dark:hover:text-primary-500{$page.url.pathname.includes(
+							class="flex text-sm font-medium hover:text-primary-700 dark:hover:text-primary-500{page.url.pathname.includes(
 								'/campgrounds'
 							)
-								? ' text-primary-700 dark:text-primary-500'
+								? ' text-primary'
 								: ' text-gray-900 dark:text-white'}"
 						>
 							Campgrounds
@@ -68,12 +52,13 @@
 				</ul>
 			</div>
 
-			<div class="flex items-center lg:space-x-2">
-				<a
+			<div class="flex items-center lg:space-x-2 mb-2">
+				<Button
+					class="rounded-lg bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 shadow-lg shadow-blue-500/50 hover:bg-gradient-to-br focus:ring-blue-300 dark:shadow-lg dark:shadow-blue-800/80 dark:focus:ring-blue-800"
 					href="/sign-in"
-					class="mb-2 me-2 rounded-lg bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 px-5 py-2.5 text-center text-sm font-medium text-white shadow-lg shadow-primary-500/50 hover:bg-gradient-to-br focus:outline-none focus:ring-4 focus:ring-primary-300 dark:shadow-lg dark:shadow-primary-800/80 dark:focus:ring-primary-800"
-					>Sign In</a
 				>
+					Sign In
+				</Button>
 			</div>
 		</div>
 
@@ -105,7 +90,7 @@
 			class="flex items-center justify-center text-2xl font-semibold text-gray-900 dark:text-white"
 		>
 			<img class="mr-2 max-w-10" src={Logo} alt="Logo" />
-			{AppName}
+			{PUBLIC_APP_NAME}
 		</a>
 		<p class="my-6 text-gray-500 dark:text-gray-400">
 			A campground is where we gather to weave memories beneath constellations, forging bonds as
@@ -120,29 +105,10 @@
 			</li>
 		</ul>
 		<span class="text-sm text-gray-500 dark:text-gray-400 sm:text-center"
-			>© {new Date().getFullYear()} <a href="/" class="hover:underline">{AppName}</a>. All Rights
-			Reserved.</span
+			>© {new Date().getFullYear()} <a href="/" class="hover:underline">{PUBLIC_APP_NAME}</a>. All
+			Rights Reserved.</span
 		>
 	</div>
 </footer>
 
-<button
-	aria-label="Back to top"
-	onclick={() => backToTop(0, 1500, expoInOut)}
-	class="leading-0 fixed bottom-[15px] right-[15px] z-[996] me-2 inline-flex size-10 animate-bounce items-center justify-center rounded-lg border border-primary-700 p-2.5 text-center text-[16px] text-sm font-medium text-primary-700 hover:bg-primary-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-primary-300 dark:border-primary-500 dark:text-primary-500 dark:hover:bg-primary-500 dark:hover:text-white dark:focus:ring-primary-800 lg:size-11"
-	class:invisible={scrollY <= 100}
-	transition:fade={{ duration: 1000 }}
->
-	<svg
-		aria-hidden="true"
-		xmlns="http://www.w3.org/2000/svg"
-		width="48"
-		height="48"
-		viewBox="0 0 24 24"
-		fill="currentColor"
-		style="transform: ;msFilter:;"
-		><path d="m6.293 11.293 1.414 1.414L12 8.414l4.293 4.293 1.414-1.414L12 5.586z"></path><path
-			d="m6.293 16.293 1.414 1.414L12 13.414l4.293 4.293 1.414-1.414L12 10.586z"
-		></path></svg
-	>
-</button>
+<BackToTop />

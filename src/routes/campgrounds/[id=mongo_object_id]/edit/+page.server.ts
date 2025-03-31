@@ -1,7 +1,9 @@
-import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { convertToValidationErrors } from '$lib/server';
-import { Campground, campgroundRequestValidator } from '$lib/server/campground';
+import { error, fail, redirect } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { Campground } from '$features/campgrounds/document';
+import { formCampgroundSchema } from '$features/campgrounds/schemas';
 
 export const load = (async ({ params }) => {
 	const campground = await Campground.findById(params.id, {
@@ -15,37 +17,29 @@ export const load = (async ({ params }) => {
 
 	if (!campground) error(404, { message: 'Campground not found' });
 
+	const form = await superValidate(zod(formCampgroundSchema));
+
 	return {
-		campground
+		campground,
+		form
 	};
 }) satisfies PageServerLoad;
 
 export const actions = {
-	default: async ({ request, params }) => {
-		const { id } = params;
-		const updateCampground = Object.fromEntries(await request.formData());
-		const { error: err } = campgroundRequestValidator.validate(updateCampground, {
-			abortEarly: false
+	default: async ({ request }) => {
+		const form = await superValidate(request, zod(formCampgroundSchema));
+
+		if (!form.valid) return fail(400, { form });
+
+		const { id, title, description, image, location, price } = form.data;
+
+		const campground = await Campground.findByIdAndUpdate(id, {
+			title,
+			description,
+			image,
+			location,
+			price
 		});
-
-		if (err) {
-			const validationErrors = convertToValidationErrors(err);
-
-			const errors = Object.keys(updateCampground)
-				.map((k) => {
-					return {
-						[k]: {
-							submittedValue: validationErrors[k] ? undefined : updateCampground[k],
-							error: validationErrors[k]
-						}
-					};
-				})
-				.reduce((prev, next) => Object.assign(next, prev), {});
-
-			return fail(400, { errors });
-		}
-
-		const campground = await Campground.findByIdAndUpdate(id, updateCampground);
 
 		redirect(303, `/campgrounds/${campground?._id}`);
 	}

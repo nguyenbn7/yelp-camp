@@ -1,18 +1,33 @@
 <script lang="ts">
-	import { AppName, formatAsCurrency, readMore } from '$lib';
 	import type { PageData } from './$types';
+	import { Metadata } from '$lib/components/metadata';
+	import { toCurrency } from '$lib';
+	import truncate from 'lodash/truncate';
+	import { Button } from '$lib/components/ui/button';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardFooter,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card';
 
-	let { data }: { data: PageData } = $props();
+	interface PageProps {
+		data: PageData;
+	}
+
+	let { data }: PageProps = $props();
+
 	const { campgrounds } = data;
 </script>
 
-<svelte:head>
-	<title>{AppName} - All campgrounds</title>
-</svelte:head>
+<Metadata title="Campgrounds" />
 
 <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
 	<div class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
 		<div>
+			<!-- TODO: -->
 			<nav class="flex" aria-label="Breadcrumb">
 				<ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
 					<li class="inline-flex items-center">
@@ -64,6 +79,7 @@
 				Campgrounds
 			</h2>
 		</div>
+		<!-- TODO: -->
 		<div class="flex items-center space-x-4">
 			<a
 				href="/campgrounds/new"
@@ -84,39 +100,33 @@
 			</a>
 		</div>
 	</div>
-	<div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
+	<div class="mb-4 grid gap-7 sm:grid-cols-2 md:mb-8 lg:grid-cols-3">
 		{#each campgrounds as campground}
-			<div
-				class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-			>
-				<div class="h-56 w-full">
-					<img class="mx-auto h-full" src={campground.image} alt={campground.title} />
-				</div>
-				<div class="pt-6 text-center">
-					<h2 class="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
-						{campground.title}
-					</h2>
+			<Card>
+				<CardHeader>
+					<div class="h-56 w-full rounded-md">
+						<img class="w-full h-full" src={campground.image} alt={campground.title} />
+					</div>
+				</CardHeader>
 
-					<p class="mt-1 text-xs font-medium uppercase text-gray-500 dark:text-neutral-500">
-						{campground.location}
-					</p>
+				<CardContent>
+					<CardTitle class="text-lg text-center font-semibold">{campground.title}</CardTitle>
 
-					<p class="my-4 text-2xl font-extrabold leading-tight text-gray-900 dark:text-white">
-						{formatAsCurrency(Number(campground.price))}/night
+					<CardDescription class="text-center">{campground.location}</CardDescription>
+
+					<p class="my-4 text-2xl font-extrabold leading-tight text-gray-900 dark:text-white text-center">
+						{toCurrency(campground.price)}/night
 					</p>
 
 					<p class="mb-3 mt-1 break-words text-gray-500 dark:text-neutral-400">
-						{readMore(campground.description, 100)}
+						{truncate(campground.description, { length: 200 })}
 					</p>
+				</CardContent>
 
-					<a
-						href="/campgrounds/{campground._id}"
-						class="inline-flex items-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-					>
-						More details
-					</a>
-				</div>
-			</div>
+				<CardFooter>
+					<Button href="/campgrounds/{campground._id}" class="w-full">More details</Button>
+				</CardFooter>
+			</Card>
 		{/each}
 	</div>
 </div>

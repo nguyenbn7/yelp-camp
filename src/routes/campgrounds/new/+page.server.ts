@@ -1,36 +1,34 @@
+import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
-import type { Actions } from './$types';
-import { Campground, campgroundRequestValidator } from '$lib/server/campground';
-import { convertToValidationErrors } from '$lib/server';
+import { superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { formCampgroundSchema } from '$features/campgrounds/schemas';
+import { Campground } from '$features/campgrounds/document';
+
+export const load: PageServerLoad = async () => {
+	const form = await superValidate(zod(formCampgroundSchema.omit({ id: true })));
+
+	return { form };
+};
 
 export const actions = {
 	default: async ({ request }) => {
-		const data = await request.formData();
-		const newCampground = Object.fromEntries(data);
+		const form = await superValidate(request, zod(formCampgroundSchema.omit({ id: true })));
 
-		const { error: err } = campgroundRequestValidator.validate(newCampground, {
-			abortEarly: false
+		if (!form.valid) return fail(400, { form });
+
+		const { title, description, image, location, price } = form.data;
+
+		const campground = new Campground({
+			title,
+			description,
+			image,
+			location,
+			price
 		});
 
-		if (err) {
-			const validationErrors = convertToValidationErrors(err);
-
-			const errors = Object.keys(newCampground)
-				.map((k) => {
-					return {
-						[k]: {
-							submittedValue: validationErrors[k] ? undefined : newCampground[k],
-							error: validationErrors[k]
-						}
-					};
-				})
-				.reduce((prev, next) => Object.assign(next, prev), {});
-
-			return fail(400, { errors });
-		}
-
-		const campground = new Campground(newCampground);
 		await campground.save();
+
 		redirect(303, `/campgrounds/${campground._id}`);
 	}
 } satisfies Actions;

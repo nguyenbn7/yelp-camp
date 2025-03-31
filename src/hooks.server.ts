@@ -1,15 +1,14 @@
-import { MONGO_URL } from '$env/static/private';
-import type { Handle } from '@sveltejs/kit';
 import { connect } from 'mongoose';
+import type { Handle } from '@sveltejs/kit';
+import { MONGO_URL } from '$env/static/private';
 
-(async () => {
+async function connectMongo() {
 	try {
 		await connect(MONGO_URL);
-	} catch (err) {
-		console.error('Connection error: ', err);
+	} catch (error) {
+		console.error('Connection error:');
+		throw error;
 	}
-})();
+}
 
-export const handle: Handle = async ({ event, resolve }) => {
-	return resolve(event);
-};
+connectMongo();
