@@ -1,28 +1,8 @@
 import type { PageServerLoad } from './$types';
-import { Campground } from '$features/campgrounds/document';
+import { findCampgrounds } from '$features/campgrounds/server/repository';
 
 export const load = (async () => {
-	const campgrounds: {
-		_id: string;
-		title: string;
-		price: number;
-		description: string;
-		location: string;
-		image: string;
-	}[] = await Campground.aggregate([
-		{
-			$project: {
-				_id: {
-					$toString: '$_id'
-				},
-				title: 1,
-				price: 1,
-				description: 1,
-				location: 1,
-				image: 1
-			}
-		}
-	]);
+	const campgrounds = await findCampgrounds();
 
 	return {
 		campgrounds

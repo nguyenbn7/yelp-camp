@@ -1,5 +1,5 @@
-import { connect } from 'mongoose';
 import type { Handle } from '@sveltejs/kit';
+import { connect } from 'mongoose';
 import { MONGO_URL } from '$env/static/private';
 
 async function connectMongo() {
@@ -12,3 +12,7 @@ async function connectMongo() {
 }
 
 connectMongo();
+
+export const handle: Handle = async ({ event, resolve }) => {
+	return resolve(event);
+};

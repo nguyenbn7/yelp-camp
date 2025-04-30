@@ -13,6 +13,6 @@
 	let { data, children }: LayoutProps = $props();
 </script>
 
-{@render children()}
-
 <Toaster richColors closeButton />
+
+{@render children()}

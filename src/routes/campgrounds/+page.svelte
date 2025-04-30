@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { Metadata } from '$lib/components/metadata';
-	import { toCurrency } from '$lib';
+	import { toCurrency } from '$lib/currency';
 	import truncate from 'lodash/truncate';
 	import { Button } from '$lib/components/ui/button';
 	import {
@@ -102,19 +102,25 @@
 	</div>
 	<div class="mb-4 grid gap-7 sm:grid-cols-2 md:mb-8 lg:grid-cols-3">
 		{#each campgrounds as campground}
+			{@const campgroundUrl = `/campgrounds/${campground.id}`}
+
 			<Card>
-				<CardHeader>
-					<div class="h-56 w-full rounded-md">
-						<img class="w-full h-full" src={campground.image} alt={campground.title} />
-					</div>
-				</CardHeader>
+				<a href={campgroundUrl} class="contents">
+					<CardHeader class="px-0 pt-0 h-72">
+						<img class="w-full h-full rounded-t-lg" src={campground.image} alt={campground.title} />
+					</CardHeader>
+				</a>
 
 				<CardContent>
-					<CardTitle class="text-lg text-center font-semibold">{campground.title}</CardTitle>
+					<a href={campgroundUrl} class="contents group">
+						<CardTitle class="text-2xl text-center font-semibold group-hover:underline">{campground.title}</CardTitle>
+					</a>
 
 					<CardDescription class="text-center">{campground.location}</CardDescription>
 
-					<p class="my-4 text-2xl font-extrabold leading-tight text-gray-900 dark:text-white text-center">
+					<p
+						class="my-4 text-2xl font-extrabold leading-tight text-gray-900 dark:text-white text-center"
+					>
 						{toCurrency(campground.price)}/night
 					</p>
 
@@ -124,7 +130,7 @@
 				</CardContent>
 
 				<CardFooter>
-					<Button href="/campgrounds/{campground._id}" class="w-full">More details</Button>
+					<Button href={campgroundUrl} class="w-full">Explore more</Button>
 				</CardFooter>
 			</Card>
 		{/each}

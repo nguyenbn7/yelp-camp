@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import cities from './cities.js';
 import { places, descriptors } from './helpers';
-import { Campground } from '../src/features/campgrounds/document';
+import { Campground } from '../src/lib/server/mongo/document';
 
 function sample(array: Array<string>) {
 	return array[Math.floor(Math.random() * array.length)];

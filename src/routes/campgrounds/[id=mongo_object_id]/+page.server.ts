@@ -1,14 +1,13 @@
 import type { Actions, PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import mongoose from 'mongoose';
-import { Campground } from '$features/campgrounds/document';
-import { Review } from '$features/reviews/document';
+import { Types } from 'mongoose';
+import { Campground } from '$lib/server/mongo/document';
 
 export const load = (async ({ params }) => {
 	const campgrounds = await Campground.aggregate([
 		{
 			$match: {
-				_id: new mongoose.Types.ObjectId(params.id)
+				_id: new Types.ObjectId(params.id)
 			}
 		},
 		{
@@ -46,6 +45,7 @@ export const load = (async ({ params }) => {
 	]).limit(1);
 
 	const campground = campgrounds[0];
+
 	if (!campground) error(404, { message: 'Campground not found' });
 
 	return {
@@ -56,7 +56,9 @@ export const load = (async ({ params }) => {
 export const actions = {
 	delete: async ({ params }) => {
 		const { id } = params;
+
 		await Campground.findByIdAndDelete(id);
+
 		redirect(303, '/campgrounds');
 	},
 	deleteComment: async ({ request }) => {
@@ -66,8 +68,8 @@ export const actions = {
 			reviewId: string;
 		};
 
-		await Campground.findByIdAndUpdate(campgroundId, { $pull: { reviews: reviewId } });
-		await Review.findByIdAndDelete(reviewId);
+		// await Campground.findByIdAndUpdate(campgroundId, { $pull: { reviews: reviewId } });
+		// await Review.findByIdAndDelete(reviewId);
 
 		redirect(303, `/campgrounds/${campgroundId}`);
 	}

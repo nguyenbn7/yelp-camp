@@ -1,15 +1,19 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { Metadata } from '$lib/components/metadata';
-	import { toCurrency } from '$lib';
+	import { toCurrency } from '$lib/currency';
+	import { RatingStars } from '$lib/components/rating-stars';
+	import { Button } from '$lib/components/ui/button';
 	// import { submitReview } from '$lib/review';
+	import SquarePen from '@lucide/svelte/icons/square-pen';
+	import Trash2 from '@lucide/svelte/icons/trash-2';
 
 	let { data }: { data: PageData } = $props();
 	const { campground } = data;
 
 	let showDialog = $state(false);
 	let body: string = $state('');
-	let rating: number = $state(1);
+	let rating: number = $state(4.3);
 	let reviews: { _id: string; body: string; rating: number; createdDate: Date }[] = $state(
 		campground.reviews
 	);
@@ -45,74 +49,12 @@
 				</p>
 				<div class="mt-2 flex items-center gap-2 sm:mt-0">
 					<div class="flex items-center gap-1">
-						<!-- TODO: -->
-						<svg
-							class="h-4 w-4 text-yellow-300"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							width="24"
-							height="24"
-							fill="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-							/>
-						</svg>
-						<svg
-							class="h-4 w-4 text-yellow-300"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							width="24"
-							height="24"
-							fill="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-							/>
-						</svg>
-						<svg
-							class="h-4 w-4 text-yellow-300"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							width="24"
-							height="24"
-							fill="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-							/>
-						</svg>
-						<svg
-							class="h-4 w-4 text-yellow-300"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							width="24"
-							height="24"
-							fill="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-							/>
-						</svg>
-						<svg
-							class="h-4 w-4 text-yellow-300"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							width="24"
-							height="24"
-							fill="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-							/>
-						</svg>
+						<RatingStars value={rating} />
 					</div>
-					<p class="text-sm font-medium leading-none text-gray-500 dark:text-gray-400">(5.0)</p>
+
+					<p class="text-sm font-medium leading-none text-gray-500 dark:text-gray-400">
+						({rating})
+					</p>
 					<a
 						href="#reviews"
 						class="text-sm font-medium leading-none text-gray-900 underline hover:no-underline dark:text-white"
@@ -123,45 +65,13 @@
 			</div>
 
 			<div class="mt-6 sm:mt-8 sm:flex sm:items-center sm:gap-4">
-				<a
-					type="button"
-					href="/campgrounds/{campground._id}/edit"
-					class="inline-flex items-center rounded-lg bg-primary-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+				<Button href="/campgrounds/{campground._id}/edit"
+					><SquarePen size={16} class="mr-2" /> Edit</Button
 				>
-					<svg
-						aria-hidden="true"
-						class="-ml-1 mr-1 h-5 w-5"
-						fill="currentColor"
-						viewBox="0 0 20 20"
-						xmlns="http://www.w3.org/2000/svg"
-						><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"
-						></path><path
-							fill-rule="evenodd"
-							d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-							clip-rule="evenodd"
-						></path></svg
-					>
-					Edit
-				</a>
-				<button
-					type="button"
-					class="inline-flex items-center rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
-					onclick={() => (showDialog = true)}
-				>
-					<svg
-						aria-hidden="true"
-						class="-ml-1 mr-1.5 h-5 w-5"
-						fill="currentColor"
-						viewBox="0 0 20 20"
-						xmlns="http://www.w3.org/2000/svg"
-						><path
-							fill-rule="evenodd"
-							d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-							clip-rule="evenodd"
-						></path></svg
-					>
-					Delete
-				</button>
+
+				<Button variant="outline-destructive" class="hover:cursor-pointer">
+					<Trash2 size={16} class="mr-2" /> Delete
+				</Button>
 			</div>
 
 			<hr class="my-6 border-gray-200 dark:border-gray-800 md:my-8" />
