@@ -5,7 +5,7 @@ import campgrounds from '$features/campgrounds/server/api/router';
 
 const app = new Hono()
 	.basePath('/api')
-	.route('/campgrounds/:campgroundId', reviews)
+	.route('/campgrounds/:campgroundId/reviews', reviews)
 	.route('/campgrounds', campgrounds);
 
 export default app;

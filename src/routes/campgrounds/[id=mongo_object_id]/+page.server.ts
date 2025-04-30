@@ -54,23 +54,23 @@ export const load = (async ({ params }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-	delete: async ({ params }) => {
-		const { id } = params;
+	// delete: async ({ params }) => {
+	// 	const { id } = params;
 
-		await Campground.findByIdAndDelete(id);
+	// 	await Campground.findByIdAndDelete(id);
 
-		redirect(303, '/campgrounds');
-	},
-	deleteComment: async ({ request }) => {
-		const formData = await request.formData();
-		const { campgroundId, reviewId } = Object.fromEntries(formData) as {
-			campgroundId: string;
-			reviewId: string;
-		};
+	// 	redirect(303, '/campgrounds');
+	// },
+	// deleteComment: async ({ request }) => {
+	// 	const formData = await request.formData();
+	// 	const { campgroundId, reviewId } = Object.fromEntries(formData) as {
+	// 		campgroundId: string;
+	// 		reviewId: string;
+	// 	};
 
-		// await Campground.findByIdAndUpdate(campgroundId, { $pull: { reviews: reviewId } });
-		// await Review.findByIdAndDelete(reviewId);
+	// 	await Campground.findByIdAndUpdate(campgroundId, { $pull: { reviews: reviewId } });
+	// 	await Review.findByIdAndDelete(reviewId);
 
-		redirect(303, `/campgrounds/${campgroundId}`);
-	}
+	// 	redirect(303, `/campgrounds/${campgroundId}`);
+	// }
 } satisfies Actions;

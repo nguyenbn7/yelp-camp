@@ -19,6 +19,7 @@
 
 <svelte:window bind:scrollY={y} />
 
+<!-- TODO: refactor this -->
 <nav
 	class="fixed left-0 top-0 w-full antialiased{y < 30
 		? ' dark bg-transparent'

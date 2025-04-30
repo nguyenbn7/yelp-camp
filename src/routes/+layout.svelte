@@ -3,8 +3,11 @@
 	import type { LayoutData } from './$types';
 
 	import '../app.css';
-	import { Toaster } from '$lib/components/ui/sonner';
 	import { ModeWatcher } from 'mode-watcher';
+
+	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
+
+	import { Toaster } from '$lib/components/ui/sonner';
 
 	interface LayoutProps {
 		data: LayoutData;
@@ -12,10 +15,14 @@
 	}
 
 	let { data, children }: LayoutProps = $props();
+
+	const queryClient = new QueryClient();
 </script>
 
 <ModeWatcher />
 
 <Toaster richColors closeButton />
 
-{@render children()}
+<QueryClientProvider client={queryClient}>
+	{@render children()}
+</QueryClientProvider>

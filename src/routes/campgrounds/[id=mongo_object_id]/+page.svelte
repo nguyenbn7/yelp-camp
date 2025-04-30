@@ -1,37 +1,25 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { Metadata } from '$lib/components/metadata';
-	import { toCurrency } from '$lib/currency';
-	import { RatingStars } from '$lib/components/rating-stars';
-	import { Button } from '$lib/components/ui/button';
-	// import { submitReview } from '$lib/review';
-	import SquarePen from '@lucide/svelte/icons/square-pen';
+
+	import Star from '@lucide/svelte/icons/star';
 	import Trash2 from '@lucide/svelte/icons/trash-2';
-	import { Textarea } from '$lib/components/ui/textarea';
+	import SquarePen from '@lucide/svelte/icons/square-pen';
+
+	import { Button } from '$lib/components/ui/button';
+
+	import { toCurrency } from '$lib/currency';
+	import { Metadata } from '$lib/components/metadata';
+	import { RatingStars } from '$lib/components/rating-stars';
+
+	import { ReviewForm } from '$features/reviews/components';
 
 	let { data }: { data: PageData } = $props();
 	const { campground } = data;
 
-	let showDialog = $state(false);
-	let body: string = $state('');
 	let rating: number = $state(4.3);
 	let reviews: { _id: string; body: string; rating: number; createdDate: Date }[] = $state(
 		campground.reviews
 	);
-
-	// async function onsubmit($event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
-	// 	$event.stopPropagation();
-	// 	$event.preventDefault();
-	// 	reviews = await submitReview(campground._id, {
-	// 		body,
-	// 		rating
-	// 	});
-
-	// 	body = '';
-	// 	rating = 1;
-	// }
-
-	let reviewRating = $state(0);
 </script>
 
 <Metadata title={`Campground: ${campground.title}`} />
@@ -42,6 +30,7 @@
 			<img class="w-full" src={campground.image} alt="Preview" />
 		</div>
 
+		<!-- TODO: refactor this -->
 		<div class="mt-6 sm:mt-8 lg:mt-0">
 			<h1 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
 				{campground.title}
@@ -72,6 +61,7 @@
 					><SquarePen size={16} class="mr-2" /> Edit</Button
 				>
 
+				<!-- TODO: prompt confirm dialog then call api -->
 				<Button variant="outline-destructive" class="hover:cursor-pointer">
 					<Trash2 size={16} class="mr-2" /> Delete
 				</Button>
@@ -90,62 +80,10 @@
 			<h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Leaving a review</h2>
 		</div>
 
-		<form method="post">
-			<div class="mb-4 grid grid-cols-2 gap-4">
-				<div class="col-span-2">
-					<div class="relative mb-6 flex items-center gap-x-2">
-						<label
-							for="review-rating"
-							class="block text-sm font-medium text-gray-900 dark:text-white"
-							>Rating:
-						</label>
-
-						<div class="flex items-center gap-1">
-							<RatingStars value={reviewRating} />
-						</div>
-						<!-- <input
-							id="review-rating"
-							type="range"
-							min="1"
-							max="5"
-							bind:value={rating}
-							class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
-						/>
-						<span class="absolute -bottom-6 start-0 text-sm text-gray-500 dark:text-gray-400"
-							>1</span
-						>
-						<span
-							class="absolute -bottom-6 start-1/4 -translate-x-1/2 text-sm text-gray-500 dark:text-gray-400 rtl:translate-x-1/2"
-							>2</span
-						>
-						<span
-							class="absolute -bottom-6 start-2/4 -translate-x-1/2 text-sm text-gray-500 dark:text-gray-400 rtl:translate-x-1/2"
-							>3</span
-						>
-						<span
-							class="absolute -bottom-6 start-3/4 -translate-x-1/2 text-sm text-gray-500 dark:text-gray-400 rtl:translate-x-1/2"
-							>4</span
-						>
-						<span class="absolute -bottom-6 end-0 text-sm text-gray-500 dark:text-gray-400">5</span>
-					</div> -->
-
-						<!-- TODO: implement hover review star -->
-					</div>
-					<div class="col-span-2">
-						<label
-							for="review-body"
-							class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Review</label
-						>
-						<Textarea bind:value={body} rows={7} />
-					</div>
-				</div>
-				<div class="border-t border-gray-200 pt-4 dark:border-gray-700 md:pt-5">
-					<Button class="hover:cursor-pointer">Submit</Button>
-				</div>
-			</div>
-		</form>
+		<ReviewForm campgroundId={campground._id} />
 	</div>
 
+	<!-- TODO: extract as component -->
 	<div
 		class="mx-auto mt-10 max-w-screen-md divide-y divide-gray-200 px-4 dark:divide-gray-700"
 		id="reviews"
@@ -155,92 +93,9 @@
 			<article class="rounded-lg bg-white p-6 text-base dark:bg-gray-900">
 				<footer class="mb-2 flex items-center justify-between">
 					<div class="flex items-center">
-						<!-- <div class="flex items-center gap-0.5 mr-3">
-							 <svg
-								 class="h-4 w-4 text-yellow-300"
-								 aria-hidden="true"
-								 xmlns="http://www.w3.org/2000/svg"
-								 width="24"
-								 height="24"
-								 fill="currentColor"
-								 viewBox="0 0 24 24"
-							 >
-								 <path
-									 d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-								 />
-							 </svg>
-		 
-							 <svg
-								 class="h-4 w-4 text-yellow-300"
-								 aria-hidden="true"
-								 xmlns="http://www.w3.org/2000/svg"
-								 width="24"
-								 height="24"
-								 fill="currentColor"
-								 viewBox="0 0 24 24"
-							 >
-								 <path
-									 d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-								 />
-							 </svg>
-		 
-							 <svg
-								 class="h-4 w-4 text-yellow-300"
-								 aria-hidden="true"
-								 xmlns="http://www.w3.org/2000/svg"
-								 width="24"
-								 height="24"
-								 fill="currentColor"
-								 viewBox="0 0 24 24"
-							 >
-								 <path
-									 d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-								 />
-							 </svg>
-		 
-							 <svg
-								 class="h-4 w-4 text-yellow-300"
-								 aria-hidden="true"
-								 xmlns="http://www.w3.org/2000/svg"
-								 width="24"
-								 height="24"
-								 fill="currentColor"
-								 viewBox="0 0 24 24"
-							 >
-								 <path
-									 d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-								 />
-							 </svg>
-		 
-							 <svg
-								 class="h-4 w-4 text-yellow-300"
-								 aria-hidden="true"
-								 xmlns="http://www.w3.org/2000/svg"
-								 width="24"
-								 height="24"
-								 fill="currentColor"
-								 viewBox="0 0 24 24"
-							 >
-								 <path
-									 d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-								 />
-							 </svg>
-						 </div> -->
-						<div class="mr-3 flex items-center gap-0.5">
+						<div class="mr-2 flex items-center gap-1">
 							{review.rating}
-							<svg
-								class="h-4 w-4 text-yellow-300"
-								aria-hidden="true"
-								xmlns="http://www.w3.org/2000/svg"
-								width="24"
-								height="24"
-								fill="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-								/>
-							</svg>
+							<Star size={16} class="size-4" stroke="none" strokeWidth={0} fill="#FFD700" />
 						</div>
 						<p
 							class="mr-3 inline-flex items-center text-sm font-semibold text-gray-900 dark:text-white"
