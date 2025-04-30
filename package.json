@@ -24,7 +24,7 @@
 		"@tailwindcss/postcss": "^4.1.4",
 		"@types/lodash": "^4.17.16",
 		"@types/node": "^22.15.3",
-		"bits-ui": "^1.4.1",
+		"bits-ui": "^1.4.2",
 		"clsx": "^2.1.1",
 		"eslint": "^9.25.1",
 		"eslint-config-prettier": "^10.1.2",

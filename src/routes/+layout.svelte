@@ -4,6 +4,7 @@
 
 	import '../app.css';
 	import { Toaster } from '$lib/components/ui/sonner';
+	import { ModeWatcher } from 'mode-watcher';
 
 	interface LayoutProps {
 		data: LayoutData;
@@ -12,6 +13,8 @@
 
 	let { data, children }: LayoutProps = $props();
 </script>
+
+<ModeWatcher />
 
 <Toaster richColors closeButton />
 

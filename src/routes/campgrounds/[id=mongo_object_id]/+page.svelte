@@ -7,6 +7,7 @@
 	// import { submitReview } from '$lib/review';
 	import SquarePen from '@lucide/svelte/icons/square-pen';
 	import Trash2 from '@lucide/svelte/icons/trash-2';
+	import { Textarea } from '$lib/components/ui/textarea';
 
 	let { data }: { data: PageData } = $props();
 	const { campground } = data;
@@ -29,6 +30,8 @@
 	// 	body = '';
 	// 	rating = 1;
 	// }
+
+	let reviewRating = $state(0);
 </script>
 
 <Metadata title={`Campground: ${campground.title}`} />
@@ -86,15 +89,21 @@
 		<div class="gap-3 pb-6 sm:flex sm:items-start">
 			<h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Leaving a review</h2>
 		</div>
+
 		<form method="post">
 			<div class="mb-4 grid grid-cols-2 gap-4">
 				<div class="col-span-2">
-					<div class="relative mb-6">
+					<div class="relative mb-6 flex items-center gap-x-2">
 						<label
 							for="review-rating"
-							class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Rating</label
-						>
-						<input
+							class="block text-sm font-medium text-gray-900 dark:text-white"
+							>Rating:
+						</label>
+
+						<div class="flex items-center gap-1">
+							<RatingStars value={reviewRating} />
+						</div>
+						<!-- <input
 							id="review-rating"
 							type="range"
 							min="1"
@@ -118,88 +127,21 @@
 							>4</span
 						>
 						<span class="absolute -bottom-6 end-0 text-sm text-gray-500 dark:text-gray-400">5</span>
-					</div>
-
-					<!-- TODO: implement hover review star -->
-					<!-- <div class="flex items-center">
-						<svg
-							class="h-6 w-6 text-yellow-300"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="currentColor"
-							viewBox="0 0 22 20"
-						>
-							<path
-								d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-							/>
-						</svg>
-						<svg
-							class="ms-2 h-6 w-6 text-yellow-300"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="currentColor"
-							viewBox="0 0 22 20"
-						>
-							<path
-								d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-							/>
-						</svg>
-						<svg
-							class="ms-2 h-6 w-6 text-yellow-300"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="currentColor"
-							viewBox="0 0 22 20"
-						>
-							<path
-								d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-							/>
-						</svg>
-						<svg
-							class="ms-2 h-6 w-6 text-gray-300 dark:text-gray-500"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="currentColor"
-							viewBox="0 0 22 20"
-						>
-							<path
-								d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-							/>
-						</svg>
-						<svg
-							class="ms-2 h-6 w-6 text-gray-300 hover:text-yellow-300 dark:text-gray-500 dark:hover:text-yellow-300"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="currentColor"
-							viewBox="0 0 22 20"
-						>
-							<path
-								d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"
-							/>
-						</svg>
-						<span class="ms-2 text-lg font-bold text-gray-900 dark:text-white">3.0 out of 5</span>
 					</div> -->
+
+						<!-- TODO: implement hover review star -->
+					</div>
+					<div class="col-span-2">
+						<label
+							for="review-body"
+							class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Review</label
+						>
+						<Textarea bind:value={body} rows={7} />
+					</div>
 				</div>
-				<div class="col-span-2">
-					<label
-						for="review-body"
-						class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Review</label
-					>
-					<textarea
-						id="review-body"
-						rows="6"
-						class="mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
-						bind:value={body}
-						required
-					></textarea>
+				<div class="border-t border-gray-200 pt-4 dark:border-gray-700 md:pt-5">
+					<Button class="hover:cursor-pointer">Submit</Button>
 				</div>
-			</div>
-			<div class="border-t border-gray-200 pt-4 dark:border-gray-700 md:pt-5">
-				<button
-					type="submit"
-					class="me-2 inline-flex items-center rounded-lg bg-primary-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-					>Post review</button
-				>
 			</div>
 		</form>
 	</div>

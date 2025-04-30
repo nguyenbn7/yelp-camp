@@ -5,6 +5,7 @@
 	import Logo from '$assets/logo.png';
 	import { PUBLIC_APP_NAME } from '$env/static/public';
 	import { Button } from '$lib/components/ui/button';
+	import { ToggleDarkModeButton } from '$lib/components/button';
 
 	interface PageProps {
 		data: LayoutData;
@@ -49,6 +50,8 @@
 			</div>
 
 			<div class="flex items-center lg:space-x-2 mb-2">
+				<ToggleDarkModeButton />
+
 				<Button
 					class="rounded-lg bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 shadow-lg shadow-blue-500/50 hover:bg-gradient-to-br focus:ring-blue-300 dark:shadow-lg dark:shadow-blue-800/80 dark:focus:ring-blue-800"
 					href="/sign-in"
