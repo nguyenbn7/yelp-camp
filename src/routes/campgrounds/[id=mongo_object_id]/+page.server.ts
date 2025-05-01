@@ -3,6 +3,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { Types } from 'mongoose';
 import { Campground } from '$lib/server/mongo/document';
 
+// TODO: extract this to repository
 export const load = (async ({ params }) => {
 	const campgrounds = await Campground.aggregate([
 		{
@@ -52,25 +53,3 @@ export const load = (async ({ params }) => {
 		campground
 	};
 }) satisfies PageServerLoad;
-
-export const actions = {
-	// delete: async ({ params }) => {
-	// 	const { id } = params;
-
-	// 	await Campground.findByIdAndDelete(id);
-
-	// 	redirect(303, '/campgrounds');
-	// },
-	// deleteComment: async ({ request }) => {
-	// 	const formData = await request.formData();
-	// 	const { campgroundId, reviewId } = Object.fromEntries(formData) as {
-	// 		campgroundId: string;
-	// 		reviewId: string;
-	// 	};
-
-	// 	await Campground.findByIdAndUpdate(campgroundId, { $pull: { reviews: reviewId } });
-	// 	await Review.findByIdAndDelete(reviewId);
-
-	// 	redirect(303, `/campgrounds/${campgroundId}`);
-	// }
-} satisfies Actions;

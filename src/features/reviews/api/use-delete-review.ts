@@ -6,25 +6,28 @@ import { client } from '$lib/rpc';
 import { ClientError } from '$lib/error';
 
 type ResponseError = Extract<
-	InferResponseType<(typeof client.api.campgrounds)[':campgroundId']['reviews']['$post']>,
+	InferResponseType<
+		(typeof client.api.campgrounds)[':campgroundId']['reviews'][':reviewId']['$delete']
+	>,
 	{ status: number }
 >;
 
 type Response = InferResponseType<
-	(typeof client.api.campgrounds)[':campgroundId']['reviews']['$post'],
+	(typeof client.api.campgrounds)[':campgroundId']['reviews'][':reviewId']['$delete'],
 	200
 >;
 
 type Request = InferRequestType<
-	(typeof client.api.campgrounds)[':campgroundId']['reviews']['$post']
+	(typeof client.api.campgrounds)[':campgroundId']['reviews'][':reviewId']['$delete']
 >;
 
-export default function useCreateReview() {
+export default function useDeleteReview() {
 	const mutation = createMutation<Response, ClientError, Request>({
-		mutationFn: async ({ param, json }) => {
-			const response = await client.api.campgrounds[':campgroundId']['reviews'].$post({
-				param,
-				json
+		mutationFn: async ({ param }) => {
+			const response = await client.api.campgrounds[':campgroundId']['reviews'][
+				':reviewId'
+			].$delete({
+				param
 			});
 
 			if (!response.ok) {

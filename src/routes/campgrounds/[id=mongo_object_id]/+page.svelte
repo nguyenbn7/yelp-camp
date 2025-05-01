@@ -5,21 +5,36 @@
 	import Trash2 from '@lucide/svelte/icons/trash-2';
 	import SquarePen from '@lucide/svelte/icons/square-pen';
 
-	import { Button } from '$lib/components/ui/button';
+	import { useDeleteCampground } from '$features/campgrounds/api';
 
-	import { toCurrency } from '$lib/currency';
+	import { ReviewForm } from '$features/reviews/components';
+	import { useDeleteReview } from '$features/reviews/api';
+
 	import { Metadata } from '$lib/components/metadata';
 	import { RatingStars } from '$lib/components/rating-stars';
 
-	import { ReviewForm } from '$features/reviews/components';
+	import { toCurrency } from '$lib/currency';
 
-	let { data }: { data: PageData } = $props();
+	import { Button } from '$lib/components/ui/button';
+
+	interface PageProps {
+		data: PageData;
+	}
+
+	let { data }: PageProps = $props();
+
 	const { campground } = data;
 
+	// TODO: get rating and reviews from campground rather than hardcode
 	let rating: number = $state(4.3);
+
+	// TODO: remove this after done with ssr campground
 	let reviews: { _id: string; body: string; rating: number; createdDate: Date }[] = $state(
 		campground.reviews
 	);
+
+	const deleteCampground = useDeleteCampground();
+	const deleteReview = useDeleteReview();
 </script>
 
 <Metadata title={`Campground: ${campground.title}`} />
@@ -61,8 +76,19 @@
 					><SquarePen size={16} class="mr-2" /> Edit</Button
 				>
 
-				<!-- TODO: prompt confirm dialog then call api -->
-				<Button variant="outline-destructive" class="hover:cursor-pointer">
+				<Button
+					variant="outline-danger"
+					class="hover:cursor-pointer"
+					onclick={() => {
+						// TODO: prompt confirm dialog
+
+						$deleteCampground.mutate({
+							param: {
+								id: campground._id as string
+							}
+						});
+					}}
+				>
 					<Trash2 size={16} class="mr-2" /> Delete
 				</Button>
 			</div>
@@ -124,30 +150,26 @@
 							>
 						</p>
 					</div>
-					<form action="?/deleteComment" method="post">
-						<input type="hidden" name="campgroundId" value={campground._id} />
-						<input type="hidden" name="reviewId" value={review._id} />
-						<button
-							class="rounded-lg bg-red-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
-							type="submit"
-							title="Delete"
-						>
-							<svg
-								aria-hidden="true"
-								class="h-5 w-5"
-								fill="currentColor"
-								viewBox="0 0 20 20"
-								xmlns="http://www.w3.org/2000/svg"
-								><path
-									fill-rule="evenodd"
-									d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-									clip-rule="evenodd"
-								></path></svg
-							>
-							<span class="sr-only">Delete</span>
-						</button>
-					</form>
+
+					<Button
+						size="icon"
+						variant="danger"
+						class="hover:cursor-pointer"
+						title="Delete"
+						onclick={() => {
+							// TODO: prompt confirm dialog
+							$deleteReview.mutate({
+								param: {
+									campgroundId: campground._id as string,
+									reviewId: review._id
+								}
+							});
+						}}
+					>
+						<Trash2 size={16} />
+					</Button>
 				</footer>
+
 				<p class="text-gray-500 dark:text-gray-400 whitespace-pre-wrap">
 					{review.body}
 				</p>

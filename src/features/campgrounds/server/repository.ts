@@ -1,4 +1,7 @@
-import { Campground, type CampgroundSchema } from '$lib/server/mongo/document';
+import type { ObjectId } from 'mongoose';
+import type { CampgroundSchema } from '$lib/server/mongo/document';
+
+import { Campground } from '$lib/server/mongo/document';
 
 export async function findCampgrounds() {
 	const campgrounds = await Campground.find()
@@ -80,4 +83,9 @@ export async function findCampgroundByIdAndUpdate(
 	const campground = await Campground.findByIdAndUpdate(id, data);
 
 	return campground;
+}
+
+export async function deletesCampground(searchParams: { id: string | ObjectId }) {
+	const { id } = searchParams;
+	return Campground.findByIdAndDelete(id);
 }

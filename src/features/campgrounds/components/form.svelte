@@ -1,15 +1,20 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
+
+	import { campgroundFormSchema } from '$features/campgrounds/schema';
+
 	import { z } from 'zod';
+
 	import { cn } from '$lib/utils';
+
 	import { superForm, type SuperValidated } from 'sveltekit-superforms/client';
 	import { zodClient } from 'sveltekit-superforms/adapters';
+
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { FormButton, FormControl, FormField, FormFieldErrors } from '$lib/components/ui/form';
-	import { Button } from '$lib/components/ui/button';
-	import { campgroundFormSchema } from '$features/campgrounds/schema';
 
 	interface Props {
 		form: SuperValidated<z.infer<typeof campgroundFormSchema>, any>;
@@ -93,11 +98,11 @@
 
 	<div class="mt-10 flex justify-between gap-10">
 		{#if campgroundId}
-			<Button href="/campgrounds/{campgroundId}" variant="outline-destructive" class="w-full"
+			<Button href="/campgrounds/{campgroundId}" variant="outline-danger" class="w-full"
 				>Back</Button
 			>
 		{:else}
-			<Button href="/campgrounds" variant="outline-destructive" class="w-full"
+			<Button href="/campgrounds" variant="outline-danger" class="w-full"
 				>Back to Campgrounds</Button
 			>
 		{/if}
