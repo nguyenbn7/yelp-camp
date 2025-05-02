@@ -4,6 +4,8 @@
 
 	import { resetMode, setMode } from 'mode-watcher';
 
+	import { cn } from '$lib/utils';
+
 	import { buttonVariants } from '$lib/components/ui/button';
 	import {
 		DropdownMenu,
@@ -11,10 +13,16 @@
 		DropdownMenuItem,
 		DropdownMenuTrigger
 	} from '$lib/components/ui/dropdown-menu';
+
+	interface Props {
+		class?: string;
+	}
+
+	let { class: className }: Props = $props();
 </script>
 
 <DropdownMenu>
-	<DropdownMenuTrigger class={buttonVariants({ variant: 'outline', size: 'icon' })}>
+	<DropdownMenuTrigger class={cn(buttonVariants({ variant: 'outline', size: 'icon' }), className)}>
 		<Sun
 			class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
 		/>
