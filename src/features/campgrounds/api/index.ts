@@ -1,1 +1,1 @@
-export { default as useDeleteCampground } from './use-delete-campground';
+export { default as useDeleteCampground } from './delete-campground';

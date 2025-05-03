@@ -2,6 +2,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { Types } from 'mongoose';
 import { Campground } from '$lib/server/mongo/document';
+import { StatusCodes } from 'http-status-codes';
 
 // TODO: extract this to repository
 export const load = (async ({ params }) => {
@@ -47,7 +48,7 @@ export const load = (async ({ params }) => {
 
 	const campground = campgrounds[0];
 
-	if (!campground) error(404, { message: 'Campground not found' });
+	if (!campground) error(StatusCodes.NOT_FOUND, { message: 'Campground not found' });
 
 	return {
 		campground

@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { Metadata } from '$lib/components/metadata';
 	import { Button } from '$lib/components/ui/button';
+	import { StatusCodes } from 'http-status-codes';
 </script>
 
 <Metadata title={page.status.toString()} />
@@ -13,16 +14,16 @@
 				{page.status}
 			</h1>
 			<p class="mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white md:text-4xl">
-				{#if page.status === 404}
+				{#if page.status === StatusCodes.NOT_FOUND}
 					Something's missing.
-				{:else if page.status === 500}
+				{:else}
 					Internal Server Error.
 				{/if}
 			</p>
 			<p class="mb-4 text-lg font-light text-gray-700 dark:text-gray-400">
-				{#if page.status === 404}
+				{#if page.status === StatusCodes.NOT_FOUND}
 					Sorry, we can't find that page. You'll find lots to explore on the home page.
-				{:else if page.status === 500}
+				{:else}
 					We are already working to solve the problem.
 				{/if}
 			</p>

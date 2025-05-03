@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Types } from 'mongoose';
 
-export const campgroundFormSchema = z.object({
+export const campgroundSchema = z.object({
 	title: z.string().min(1, 'Required'),
 	price: z.number().min(1, 'Price cannot be 0'),
 	description: z.string().min(1, 'Required'),

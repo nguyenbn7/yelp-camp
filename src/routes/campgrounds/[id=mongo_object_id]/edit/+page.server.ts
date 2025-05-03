@@ -1,19 +1,24 @@
 import type { Actions, PageServerLoad } from './$types';
-import { error, fail, redirect } from '@sveltejs/kit';
-import { message, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
-import { campgroundFormSchema, campgroundIdSchema } from '$features/campgrounds/schema';
+
+import { campgroundSchema, campgroundIdSchema } from '$features/campgrounds/schema';
 import {
 	findCampgroundById,
 	findCampgroundByIdAndUpdate
 } from '$features/campgrounds/server/repository';
 
+import { StatusCodes } from 'http-status-codes';
+
+import { error, redirect } from '@sveltejs/kit';
+
+import { message, superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+
 export const load = (async ({ params }) => {
 	const campground = await findCampgroundById({ id: params.id });
 
-	if (!campground) error(404, { message: 'Campground not found' });
+	if (!campground) error(StatusCodes.NOT_FOUND, { message: 'Campground not found' });
 
-	const form = await superValidate(zod(campgroundFormSchema), {
+	const form = await superValidate(zod(campgroundSchema), {
 		defaults: { ...campground }
 	});
 
@@ -27,18 +32,25 @@ export const actions = {
 	default: async ({ request }) => {
 		const form = await superValidate(
 			request,
-			zod(campgroundFormSchema.extend(campgroundIdSchema.shape))
+			zod(campgroundSchema.extend(campgroundIdSchema.shape))
 		);
 
-		if (!form.valid) return fail(400, { form });
+		if (!form.valid)
+			return message(form, 'Invalid data form. Please check again.', {
+				status: StatusCodes.BAD_REQUEST
+			});
 
 		const { id, ...data } = form.data;
 
 		const campground = await findCampgroundByIdAndUpdate({ id }, data);
 
 		if (!campground)
-			return message(form, 'Cannot update campground. Please try again', { status: 409 });
+			return message(form, 'Cannot update campground. Please try again', {
+				status: StatusCodes.UNPROCESSABLE_ENTITY
+			});
 
-		redirect(303, `/campgrounds/${campground._id}`);
+		form.message = 'Campground is updated';
+
+		return { form, campground };
 	}
 } satisfies Actions;

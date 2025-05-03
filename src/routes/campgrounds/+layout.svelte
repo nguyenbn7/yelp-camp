@@ -2,7 +2,10 @@
 	import type { Snippet } from 'svelte';
 	import type { LayoutData } from './$types';
 
+	import { ConfirmDialog } from '$lib/components/confirm-dialog';
+
 	import { Footer, Header } from '$lib/components';
+
 	import { BackToTopButton } from '$lib/components/button';
 
 	interface LayoutProps {
@@ -12,6 +15,8 @@
 
 	const { data, children }: LayoutProps = $props();
 </script>
+
+<ConfirmDialog />
 
 <Header />
 

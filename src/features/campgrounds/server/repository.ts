@@ -3,6 +3,8 @@ import type { CampgroundSchema } from '$lib/server/mongo/document';
 
 import { Campground } from '$lib/server/mongo/document';
 
+export type CampgroundObject = Omit<CampgroundSchema & { id: string }, 'reviews'>;
+
 export async function findCampgrounds() {
 	const campgrounds = await Campground.find()
 		.select({
@@ -24,7 +26,7 @@ export async function findCampgrounds() {
 								...data
 							};
 						}
-					}) as unknown as Omit<CampgroundSchema & { id: string }, 'reviews'>
+					}) as unknown as CampgroundObject
 			);
 		});
 
@@ -42,7 +44,16 @@ export async function createCampground(data: {
 
 	await campground.save();
 
-	return campground.toObject();
+	return campground.toObject<CampgroundObject>({
+		flattenObjectIds: true,
+		transform(_doc, ret) {
+			const { _id, ...data } = ret;
+			return {
+				id: _id,
+				...data
+			};
+		}
+	});
 }
 
 export async function findCampgroundById(searchParams: { id: string }) {
@@ -56,7 +67,9 @@ export async function findCampgroundById(searchParams: { id: string }) {
 		location: 1
 	});
 
-	return campground?.toObject({
+	if (!campground) return;
+
+	return campground.toObject<CampgroundObject>({
 		flattenObjectIds: true,
 		transform(_doc, ret) {
 			const { _id, ...data } = ret;
@@ -65,7 +78,7 @@ export async function findCampgroundById(searchParams: { id: string }) {
 				...data
 			};
 		}
-	}) as Omit<CampgroundSchema & { id: string }, 'reviews'> | undefined;
+	});
 }
 
 export async function findCampgroundByIdAndUpdate(
@@ -82,7 +95,18 @@ export async function findCampgroundByIdAndUpdate(
 
 	const campground = await Campground.findByIdAndUpdate(id, data);
 
-	return campground;
+	if (!campground) return;
+
+	return campground.toObject<CampgroundObject>({
+		flattenObjectIds: true,
+		transform(_doc, ret) {
+			const { _id, ...data } = ret;
+			return {
+				id: _id,
+				...data
+			};
+		}
+	});
 }
 
 export async function deletesCampground(searchParams: { id: string | ObjectId }) {

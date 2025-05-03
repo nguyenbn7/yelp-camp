@@ -11,6 +11,7 @@
 	import { useDeleteReview } from '$features/reviews/api';
 
 	import { Metadata } from '$lib/components/metadata';
+	import { useConfirm } from '$lib/components/confirm-dialog';
 	import { RatingStars } from '$lib/components/rating-stars';
 
 	import { toCurrency } from '$lib/currency';
@@ -34,7 +35,10 @@
 	);
 
 	const deleteCampground = useDeleteCampground();
+
 	const deleteReview = useDeleteReview();
+
+	const { confirm } = useConfirm();
 </script>
 
 <Metadata title={`Campground: ${campground.title}`} />
@@ -79,14 +83,22 @@
 				<Button
 					variant="outline-danger"
 					class="hover:cursor-pointer"
-					onclick={() => {
-						// TODO: prompt confirm dialog
-
-						$deleteCampground.mutate({
-							param: {
-								id: campground._id as string
-							}
+					disabled={$deleteCampground.isPending}
+					onclick={async () => {
+						const ok = await confirm({
+							title: 'Are you sure?',
+							description: 'You are about to delete this campground and cannot be reversed'
 						});
+
+						if (ok) {
+							$deleteCampground.mutate({
+								param: {
+									id: campground._id as string
+								}
+							});
+
+							return;
+						}
 					}}
 				>
 					<Trash2 size={16} class="mr-2" /> Delete
@@ -156,14 +168,23 @@
 						variant="danger"
 						class="hover:cursor-pointer"
 						title="Delete"
-						onclick={() => {
-							// TODO: prompt confirm dialog
-							$deleteReview.mutate({
-								param: {
-									campgroundId: campground._id as string,
-									reviewId: review._id
-								}
+						disabled={$deleteReview.isPending}
+						onclick={async () => {
+							const ok = await confirm({
+								title: 'Are you sure?',
+								description: 'You are about to delete this review and cannot be reversed'
 							});
+
+							if (ok) {
+								$deleteReview.mutate({
+									param: {
+										campgroundId: campground._id as string,
+										id: review._id
+									}
+								});
+
+								return;
+							}
 						}}
 					>
 						<Trash2 size={16} />

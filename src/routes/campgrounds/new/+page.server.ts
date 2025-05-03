@@ -1,26 +1,32 @@
 import type { Actions, PageServerLoad } from './$types';
-import { fail, redirect } from '@sveltejs/kit';
 
-import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
-
-import { campgroundFormSchema } from '$features/campgrounds/schema';
+import { campgroundSchema } from '$features/campgrounds/schema';
 import { createCampground } from '$features/campgrounds/server/repository';
 
+import { StatusCodes } from 'http-status-codes';
+
+import { message, superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+
 export const load: PageServerLoad = async () => {
-	const form = await superValidate(zod(campgroundFormSchema));
+	const form = await superValidate(zod(campgroundSchema));
 
 	return { form };
 };
 
 export const actions = {
 	default: async ({ request }) => {
-		const form = await superValidate(request, zod(campgroundFormSchema));
+		const form = await superValidate(request, zod(campgroundSchema));
 
-		if (!form.valid) return fail(400, { form });
+		if (!form.valid)
+			return message(form, 'Invalid data form. Please check again.', {
+				status: StatusCodes.BAD_REQUEST
+			});
 
 		const campground = await createCampground(form.data);
 
-		redirect(303, `/campgrounds/${campground._id}`);
+		form.message = 'Campground is created';
+
+		return { form, campground };
 	}
 } satisfies Actions;
