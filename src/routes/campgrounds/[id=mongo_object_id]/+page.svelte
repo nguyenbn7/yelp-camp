@@ -36,8 +36,6 @@
 	const reviews = $derived(data.campground.reviews);
 
 	const { confirm } = useConfirm();
-
-	console.log(data);
 </script>
 
 <Metadata title={`Campground: ${campground.title}`} />

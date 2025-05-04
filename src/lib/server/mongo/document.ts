@@ -20,6 +20,8 @@ const reviewSchema = new Schema<ReviewSchema>({
 export const Review =
 	(models['Review'] as Model<ReviewSchema>) || model<ReviewSchema>('Review', reviewSchema);
 
+export type ReviewDocument = InstanceType<typeof Review>;
+
 // Campground schema definition
 
 export interface CampgroundSchema {
