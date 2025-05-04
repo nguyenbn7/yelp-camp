@@ -8,7 +8,7 @@
 	import { useDeleteCampground } from '$features/campgrounds/api';
 
 	import { ReviewForm } from '$features/reviews/components';
-	import { useDeleteReview } from '$features/reviews/api';
+	import { useDeleteReview, useGetReviews } from '$features/reviews/api';
 
 	import { Metadata } from '$lib/components/metadata';
 	import { useConfirm } from '$lib/components/confirm-dialog';
@@ -24,16 +24,21 @@
 
 	const { data }: PageProps = $props();
 
+	const { campground } = data;
+
+	const getReviewsClient = useGetReviews(
+		{ campgroundId: campground.id },
+		{ reviews: campground.reviews }
+	);
+
+	const reviews = $derived($getReviewsClient.data.reviews);
+	
 	// TODO: get rating and reviews from campground rather than hardcode
 	let rating: number = $state(4.3);
 
 	const deleteCampground = useDeleteCampground();
 
 	const deleteReview = useDeleteReview();
-
-	const campground = $derived(data.campground);
-
-	const reviews = $derived(data.campground.reviews);
 
 	const { confirm } = useConfirm();
 </script>

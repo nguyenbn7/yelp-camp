@@ -48,7 +48,6 @@ export default function useDeleteReview(options: Options = {}) {
 
 			return response.json();
 		},
-
 		async onError(error, variables, context) {
 			const { message, status } = error;
 
@@ -58,6 +57,12 @@ export default function useDeleteReview(options: Options = {}) {
 		},
 		async onSuccess(data, variables, context) {
 			toast.success('Review is deleted');
+
+			const { campgroundId } = variables.param;
+
+			await queryClient.invalidateQueries({
+				queryKey: ['get', 'campgrounds', campgroundId, 'reviews']
+			});
 
 			return onSuccess?.(data, variables, context);
 		}
