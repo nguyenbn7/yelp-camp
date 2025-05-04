@@ -22,23 +22,22 @@
 		data: PageData;
 	}
 
-	let { data }: PageProps = $props();
-
-	const { campground } = data;
+	const { data }: PageProps = $props();
 
 	// TODO: get rating and reviews from campground rather than hardcode
 	let rating: number = $state(4.3);
-
-	// TODO: remove this after done with ssr campground
-	let reviews: { _id: string; body: string; rating: number; createdDate: Date }[] = $state(
-		campground.reviews
-	);
 
 	const deleteCampground = useDeleteCampground();
 
 	const deleteReview = useDeleteReview();
 
+	const campground = $derived(data.campground);
+
+	const reviews = $derived(data.campground.reviews);
+
 	const { confirm } = useConfirm();
+
+	console.log(data);
 </script>
 
 <Metadata title={`Campground: ${campground.title}`} />
@@ -76,7 +75,7 @@
 			</div>
 
 			<div class="mt-6 sm:mt-8 sm:flex sm:items-center sm:gap-4">
-				<Button href="/campgrounds/{campground._id}/edit"
+				<Button href="/campgrounds/{campground.id}/edit"
 					><SquarePen size={16} class="mr-2" /> Edit</Button
 				>
 
@@ -93,7 +92,7 @@
 						if (ok) {
 							$deleteCampground.mutate({
 								param: {
-									id: campground._id as string
+									id: campground.id
 								}
 							});
 
@@ -118,7 +117,7 @@
 			<h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Leaving a review</h2>
 		</div>
 
-		<ReviewForm campgroundId={campground._id} />
+		<ReviewForm campgroundId={campground.id} />
 	</div>
 
 	<!-- TODO: extract as component -->
@@ -178,8 +177,8 @@
 							if (ok) {
 								$deleteReview.mutate({
 									param: {
-										campgroundId: campground._id as string,
-										id: review._id
+										campgroundId: campground.id,
+										id: review.id
 									}
 								});
 

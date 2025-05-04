@@ -8,7 +8,7 @@
 		data: PageData;
 	}
 
-	let { data }: PageProps = $props();
+	const { data }: PageProps = $props();
 </script>
 
 <Metadata title="Edit Campground" />
